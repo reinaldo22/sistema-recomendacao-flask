@@ -1,174 +1,119 @@
-from flask import Flask, request, render_template
-from math import sqrt
+from flask import Flask, jsonify, request, render_template
+import os
+import json
+import math
+
 
 app = Flask(__name__)
 
-# Dados dos itens
-avaliacoesUsuario = {'Ana': 
-		{'Freddy x Jason': 2.5, 
-		 'O Ultimato Bourne': 3.5,
-		 'Star Trek': 3.0, 
-		 'Exterminador do Futuro': 3.5, 
-		 'Norbit': 2.5, 
-		 'Star Wars': 3.0},
-	 
-	  'Marcos': 
-		{'Freddy x Jason': 3.0, 
-		 'O Ultimato Bourne': 3.5, 
-		 'Star Trek': 1.5, 
-		 'Exterminador do Futuro': 5.0, 
-		 'Star Wars': 3.0, 
-		 'Norbit': 3.5}, 
+# Define o caminho completo para o arquivo JSON
+caminho_arquivo = os.path.join('dataset', 'festas.json')
 
-	  'Pedro': 
-	    {'Freddy x Jason': 2.5, 
-		 'O Ultimato Bourne': 3.0,
-		 'Exterminador do Futuro': 3.5, 
-		 'Star Wars': 4.0},
-			 
-	  'Claudia': 
-		{'O Ultimato Bourne': 3.5, 
-		 'Star Trek': 3.0,
-		 'Star Wars': 4.5, 
-		 'Exterminador do Futuro': 4.0, 
-		 'Norbit': 2.5},
-				 
-	  'Adriano': 
-		{'Freddy x Jason': 3.0, 
-		 'O Ultimato Bourne': 4.0, 
-		 'Star Trek': 2.0, 
-		 'Exterminador do Futuro': 3.0, 
-		 'Star Wars': 3.0,
-		 'Norbit': 2.0}, 
-
-	  'Janaina': 
-	     {'Freddy x Jason': 3.0, 
-	      'O Ultimato Bourne': 4.0,
-	      'Star Wars': 3.0, 
-	      'Exterminador do Futuro': 5.0, 
-	      'Norbit': 3.5},
-			  
-	  'Leonardo': 
-	    {'O Ultimato Bourne':4.5,
-             'Norbit':1.0,
-	     'Exterminador do Futuro':4.0}
-}
-
-avaliacoesFilme = {'Freddy x Jason': 
-		{'Ana': 2.5, 
-		 'Marcos:': 3.0 ,
-		 'Pedro': 2.5, 
-		 'Adriano': 3.0, 
-		 'Janaina': 3.0 },
-	 
-	 'O Ultimato Bourne': 
-		{'Ana': 3.5, 
-		 'Marcos': 3.5,
-		 'Pedro': 3.0, 
-		 'Claudia': 3.5, 
-		 'Adriano': 4.0, 
-		 'Janaina': 4.0,
-		 'Leonardo': 4.5 },
-				 
-	 'Star Trek': 
-		{'Ana': 3.0, 
-		 'Marcos:': 1.5,
-		 'Claudia': 3.0, 
-		 'Adriano': 2.0 },
+# Abre o arquivo JSON
+with open(caminho_arquivo, 'r') as f:
+    data = json.load(f)
+    
 	
-	 'Exterminador do Futuro': 
-		{'Ana': 3.5, 
-		 'Marcos:': 5.0 ,
-		 'Pedro': 3.5, 
-		 'Claudia': 4.0, 
-		 'Adriano': 3.0, 
-		 'Janaina': 5.0,
-		 'Leonardo': 4.0},
-				 
-	 'Norbit': 
-		{'Ana': 2.5, 
-		 'Marcos:': 3.0 ,
-		 'Claudia': 2.5, 
-		 'Adriano': 2.0, 
-		 'Janaina': 3.5,
-		 'Leonardo': 1.0},
-				 
-	 'Star Wars': 
-		{'Ana': 3.0, 
-		 'Marcos:': 3.5,
-		 'Pedro': 4.0, 
-		 'Claudia': 4.5, 
-		 'Adriano': 3.0, 
-		 'Janaina': 3.0}
-}
-
-def similaridade(user, avaliacoes):
-    similaridades = {}
-    for other_user in avaliacoes:
-        if other_user != user:
-            similaridade = 0
-            intersecao = set(avaliacoes[user].keys()) & set(avaliacoes[other_user].keys())
-            if intersecao:
-                notas1 = [avaliacoes[user][filme] for filme in intersecao]
-                notas2 = [avaliacoes[other_user][filme] for filme in intersecao]
-                similaridade = sum([nota1 * nota2 for nota1, nota2 in zip(notas1, notas2)]) / (len(notas1) * len(notas2))
-            else:
-                similaridade = 0  # inicializa com zero se interseção for vazio
-            similaridades[other_user] = similaridade
-    return similaridades
-
+def get_festa_vector(data):
+   
+    festa_vector = []
     
-
-# Função para obter a lista de recomendações com base nos gêneros selecionados e no valor do item escolhido
-def get_recommendations(user, nota, avaliacoes):
-    similaridades = similaridade(user, avaliacoes)
-    notas = {}
-    total_similaridade = {}
-    for other_user in avaliacoes:
-        if other_user != user:
-            similaridade = similaridades.get(other_user, 0)
-            if similaridade > 0:
-                for filme in avaliacoes[other_user]:
-                    if filme not in avaliacoes[user]:
-                        notas.setdefault(filme, 0)
-                        notas[filme] += avaliacoes[other_user][filme] * similaridade
-                        total_similaridade.setdefault(filme, 0)
-                        total_similaridade[filme] += similaridade
-    rankings = [(nota / total_similaridade[filme], filme) for filme, nota in notas.items() if total_similaridade[filme] > 0]
-    rankings.sort(reverse=True)
-    return [filme for _, filme in rankings if _ >= nota]
-
-
+    # Adiciona a data como uma característica
+    data_parts = data["data"].split("-")
+    year = int(data_parts[0])
+    month = int(data_parts[1])
+    day = int(data_parts[2])
+    festa_vector += [year, month, day]
     
-
-# # Rota para a página inicial
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
-
-# # Rota para a página de recomendação
-# @app.route('/recomendacao', methods=['GET', 'POST'])
-# def recomendacao():
-#     if request.method == 'POST':
-#         # Obtendo os gêneros selecionados e o valor atribuído ao item escolhido
-#         selected_genres = request.form.getlist('genres')
-#         item_value = int(request.form['value'])
+    # Adiciona o local como uma característica
+    local_parts = data["local"].split(" ")
+    for part in local_parts:
+        festa_vector += [ord(c) for c in part]
         
-#         # Obtendo a lista de recomendações
-#         recommended_items = get_recommendations(selected_genres, item_value)
+    # Adiciona os gêneros musicais como características
+    generos = data["genero_musical"]
+    for genero in generos:
+        festa_vector += [ord(c) for c in genero]
+    
+    # Adiciona o preço como uma característica
+    festa_vector.append(data["preco"])
+    
+    return festa_vector
 
-#         # Retornando a lista de itens recomendados renderizados no template
-#         return render_template('recomendacao.html', items=recommended_items[:10])
-#     else:
-#         # Retornando a página de seleção de gêneros e valor do item
-#         return render_template('selecao.html')
+def cosine_similarity(vector1, vector2):
+    # Calcula a similaridade do cosseno entre dois vetores
+    dot_product = 0
+    magnitude1 = 0
+    magnitude2 = 0
+    for i in range(len(vector1)):
+        dot_product += vector1[i] * vector2[i]
+        magnitude1 += vector1[i] ** 2
+        magnitude2 += vector2[i] ** 2
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0
+    else:
+        return dot_product / (math.sqrt(magnitude1) * math.sqrt(magnitude2))
+    
+
+def recommend_festas(usuario_referencia, festas):
+    # Encontra as festas mais similares com base nas características do usuário
+    usuario_vector = get_festa_vector(usuario_referencia)
+    recomendacoes = []
+    for festa in data:
+        festa_vector = get_festa_vector(festa)
+        similaridade = cosine_similarity(usuario_vector, festa_vector)
+        recomendacoes.append((festa["nome"], similaridade))
+    
+    # Filtra as recomendações de acordo com as preferências do usuário
+    recomendacoes_filtradas = []
+    for recomendacao in recomendacoes:
+        festa = next((f for f in data if f["nome"] == recomendacao[0]), None)
+        if festa:
+            preco = festa["preco"]
+            generos = festa["genero_musical"]
+            if preco <= usuario_referencia["preco_maximo"] and usuario_referencia["genero_musical"][0] in generos:
+                recomendacoes_filtradas.append(recomendacao)
+    
+    # Ordena as recomendações filtradas por ordem decrescente de similaridade
+    recomendacoes_filtradas = sorted(recomendacoes_filtradas, key=lambda x: x[1], reverse=True)
+    
+    return recomendacoes_filtradas
+    
+
+@app.route('/lista-devedores')
+def lista():
+    
+    return jsonify(data)
+    
+
+    
+@app.route('/lista-festa/<int:id>', methods=['GET'])
+def findId(id):
+    for festa in data:
+        if festa.get('id') == id:
+            return jsonify(festa)
+
+    
+@app.route('/busca-festa', methods=['POST'])
+def filtraFesta():
+    festa = request.get_json()
+    
+    recommendations = recommend_festas(festa, data)
+    print(">>>>>>>>>>>>>>"+recommendations)
 
 
-@app.route('/teste')
-def teste():
-    este = get_recommendations('Marcos', 2, avaliacoes)
-    print(este)
-    return str(este)
+    return jsonify(recommendations)
+        
+
+
+
+# @app.route('/usuarios-filtro')
+# def get_usuarios_filtro():
+#     usuarios_filtrados = filtra_usuarios(data, 0, 1000)
+#     return jsonify(usuarios_filtrados)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

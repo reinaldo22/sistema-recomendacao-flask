@@ -1,0 +1,67 @@
+[
+    {
+        "id": 1,
+        "nome": "Festa na Praia",
+        "descricao": "Festa na praia com muita música e drinks",
+        "data": "2023-06-17",
+        "local": "Praia de Copacabana",
+        "genero_musical": [
+            "Pop",
+            "Eletrônica"
+        ],
+        "idade_minima": 18,
+        "preco": 50.0
+    },
+    {
+        "id": 2,
+        "nome": "Festa Junina",
+        "descricao": "Festa tradicional junina com comidas típicas e música ao vivo",
+        "data": "2023-06-23",
+        "local": "Parque da Cidade",
+        "genero_musical": [
+            "Forró",
+            "Sertanejo"
+        ],
+        "idade_minima": 16,
+        "preco": 30.0
+    },
+    {
+        "id": 3,
+        "nome": "Rave Subterrânea",
+        "descricao": "Festa subterrânea com muita música eletrônica e luzes neon",
+        "data": "2023-07-01",
+        "local": "Local Secreto",
+        "genero_musical": [
+            "Techno",
+            "House"
+        ],
+        "idade_minima": 21,
+        "preco": 80.0
+    },
+    {
+        "id": 4,
+        "nome": "Festa de Aniversário",
+        "descricao": "Festa de aniversário com música ao vivo e open bar",
+        "data": "2023-07-10",
+        "local": "Casa do Aniversariante",
+        "genero_musical": [
+            "Rock",
+            "MPB"
+        ],
+        "idade_minima": 18,
+        "preco": 70.0
+    },
+    {
+        "id": 5,
+        "nome": "Festa do Branco",
+        "descricao": "Festa temática onde todos devem ir vestidos de branco",
+        "data": "2023-07-15",
+        "local": "Espaço de Eventos",
+        "genero_musical": [
+            "Pop",
+            "Funk"
+        ],
+        "idade_minima": 18,
+        "preco": 60.0
+    }
+]
