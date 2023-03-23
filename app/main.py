@@ -49,7 +49,7 @@ def recommend_festas(usuario_referencia, data, n=3):
 
 
 
-@app.route('/lista-devedores')
+@app.route('/lista-festas' , methods=['GET'])
 def lista():
     return jsonify(data)
 
