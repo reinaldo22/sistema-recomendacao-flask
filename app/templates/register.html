@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Recomendações</title>
+    <title>Cadastrar Evento</title>
 
     <style>
         body {
@@ -42,68 +42,24 @@
             background-color: #181825;
         }
 
-        .table-container {
-            display: flex;
-            justify-content: center;
-            align-items: start;           
-            height: 100vh;
-
-            padding: 14px 16px;
-        }
-
-        .table-container table {
-            margin: 0 auto;
-        }
-
         .container {
             display: flex;
             justify-content: center;
             align-items: start;
-            height: 50vh;
+            height: 100vh;
 
             padding: 14px 16px;
         }
 
         .sub-container {
             background-color: #1e1e2e;
+            
             display: flex;
             justify-content: center;
             align-items: center;
-            
-            width: 25vw;
-            height: 50vh;
-        }
-
-        thead {
-            font-family: 'Open Sans', sans-serif;
-            color: #cdd6f4;
-        }
-
-        th {
-            font-family: 'Open Sans', sans-serif;
-            color: #cdd6f4;
-
-            text-align: center;
 
             width: 25vw;
-
-            padding: 14px 16px;
-        }
-
-        td {
-            font-family: 'Open Sans', sans-serif;
-            color: #cdd6f4;
-
-            text-align: center;
-
-            width: 25vw;
-
-            padding: 14px 16px;
-        }
-
-        tbody {
-            font-family: 'Open Sans', sans-serif;
-            color: #cdd6f4;
+            height: 75vh;
         }
 
         form {
@@ -129,21 +85,44 @@
 
             width: 20.5vw;
         }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }   
+
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
     </style>
 
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <ul class="navbar">
         <li><a href="/">Recomendações</a></li>
-        <li><a href="/cadastrar-evento">Cadastrar evento</a></li>
+        <li><a href="/cadastrar-festa">Cadastrar evento</a></li>
     </ul>
-
+    
     <div class="container">
         <div class="sub-container">
-            <form action="/" method="post"> 
+            <form action="/cadastrar-festa" method="post">
+                <input type="text" id="name" name="name" placeholder="Nome" required>
+
+                <br><br>
+                
+                <input type="text" id="description" name="description" placeholder="Descrição" required>
+
+                <br><br>
+                
                 <input type="text" id="date" name="date" placeholder="Data" required>
+
+                <br><br>
+                                
+                <input type="text" id="place" name="place" placeholder="Local" required>
 
                 <br><br>
                 
@@ -162,35 +141,6 @@
                 <input class="button" type="submit" value="Enviar">
             </form>
         </div>
-    </div>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Data</th>
-                    <th>Local</th>
-                    <th>Idade mínima</th>
-                    <th>Preço</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item['nome'] }}</td>
-                    <td>{{ item['descricao'] }}</td>
-                    <td>{{ item['data'] }}</td>
-                    <td>{{ item['local'] }}</td>
-                    
-                    <td>{{ item['idade_minima'] }}</td>
-                    <td>{{ item['preco'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>    
     </div>
 </body>
 </html>

@@ -1,174 +1,103 @@
-from flask import Flask, request, render_template
-from math import sqrt
+from flask import Flask, jsonify, request, render_template
+import os
+import json
+import math
 
 app = Flask(__name__)
 
-# Dados dos itens
-avaliacoesUsuario = {'Ana': 
-		{'Freddy x Jason': 2.5, 
-		 'O Ultimato Bourne': 3.5,
-		 'Star Trek': 3.0, 
-		 'Exterminador do Futuro': 3.5, 
-		 'Norbit': 2.5, 
-		 'Star Wars': 3.0},
-	 
-	  'Marcos': 
-		{'Freddy x Jason': 3.0, 
-		 'O Ultimato Bourne': 3.5, 
-		 'Star Trek': 1.5, 
-		 'Exterminador do Futuro': 5.0, 
-		 'Star Wars': 3.0, 
-		 'Norbit': 3.5}, 
+# Define o caminho completo para o arquivo JSON
+caminho_arquivo = os.path.join('dataset', 'eventos.json')
 
-	  'Pedro': 
-	    {'Freddy x Jason': 2.5, 
-		 'O Ultimato Bourne': 3.0,
-		 'Exterminador do Futuro': 3.5, 
-		 'Star Wars': 4.0},
-			 
-	  'Claudia': 
-		{'O Ultimato Bourne': 3.5, 
-		 'Star Trek': 3.0,
-		 'Star Wars': 4.5, 
-		 'Exterminador do Futuro': 4.0, 
-		 'Norbit': 2.5},
-				 
-	  'Adriano': 
-		{'Freddy x Jason': 3.0, 
-		 'O Ultimato Bourne': 4.0, 
-		 'Star Trek': 2.0, 
-		 'Exterminador do Futuro': 3.0, 
-		 'Star Wars': 3.0,
-		 'Norbit': 2.0}, 
+# Abre o arquivo JSON
+with open(caminho_arquivo, 'r') as f:
+    data = json.load(f)
 
-	  'Janaina': 
-	     {'Freddy x Jason': 3.0, 
-	      'O Ultimato Bourne': 4.0,
-	      'Star Wars': 3.0, 
-	      'Exterminador do Futuro': 5.0, 
-	      'Norbit': 3.5},
-			  
-	  'Leonardo': 
-	    {'O Ultimato Bourne':4.5,
-             'Norbit':1.0,
-	     'Exterminador do Futuro':4.0}
-}
+# Função para obter o vetor de características de uma festa
+def get_evento_vector(value):
+    # generos = ["Pop", "Eletrônica", "Forró", "Sertanejo", "Techno", "House", "Rock", "MPB", "Funk"]
+    vector = []
 
-avaliacoesFilme = {'Freddy x Jason': 
-		{'Ana': 2.5, 
-		 'Marcos:': 3.0 ,
-		 'Pedro': 2.5, 
-		 'Adriano': 3.0, 
-		 'Janaina': 3.0 },
-	 
-	 'O Ultimato Bourne': 
-		{'Ana': 3.5, 
-		 'Marcos': 3.5,
-		 'Pedro': 3.0, 
-		 'Claudia': 3.5, 
-		 'Adriano': 4.0, 
-		 'Janaina': 4.0,
-		 'Leonardo': 4.5 },
-				 
-	 'Star Trek': 
-		{'Ana': 3.0, 
-		 'Marcos:': 1.5,
-		 'Claudia': 3.0, 
-		 'Adriano': 2.0 },
-	
-	 'Exterminador do Futuro': 
-		{'Ana': 3.5, 
-		 'Marcos:': 5.0 ,
-		 'Pedro': 3.5, 
-		 'Claudia': 4.0, 
-		 'Adriano': 3.0, 
-		 'Janaina': 5.0,
-		 'Leonardo': 4.0},
-				 
-	 'Norbit': 
-		{'Ana': 2.5, 
-		 'Marcos:': 3.0 ,
-		 'Claudia': 2.5, 
-		 'Adriano': 2.0, 
-		 'Janaina': 3.5,
-		 'Leonardo': 1.0},
-				 
-	 'Star Wars': 
-		{'Ana': 3.0, 
-		 'Marcos:': 3.5,
-		 'Pedro': 4.0, 
-		 'Claudia': 4.5, 
-		 'Adriano': 3.0, 
-		 'Janaina': 3.0}
-}
-
-def similaridade(user, avaliacoes):
-    similaridades = {}
-    for other_user in avaliacoes:
-        if other_user != user:
-            similaridade = 0
-            intersecao = set(avaliacoes[user].keys()) & set(avaliacoes[other_user].keys())
-            if intersecao:
-                notas1 = [avaliacoes[user][filme] for filme in intersecao]
-                notas2 = [avaliacoes[other_user][filme] for filme in intersecao]
-                similaridade = sum([nota1 * nota2 for nota1, nota2 in zip(notas1, notas2)]) / (len(notas1) * len(notas2))
-            else:
-                similaridade = 0  # inicializa com zero se interseção for vazio
-            similaridades[other_user] = similaridade
-    return similaridades
-
-    
-
-# Função para obter a lista de recomendações com base nos gêneros selecionados e no valor do item escolhido
-def get_recommendations(user, nota, avaliacoes):
-    similaridades = similaridade(user, avaliacoes)
-    notas = {}
-    total_similaridade = {}
-    for other_user in avaliacoes:
-        if other_user != user:
-            similaridade = similaridades.get(other_user, 0)
-            if similaridade > 0:
-                for filme in avaliacoes[other_user]:
-                    if filme not in avaliacoes[user]:
-                        notas.setdefault(filme, 0)
-                        notas[filme] += avaliacoes[other_user][filme] * similaridade
-                        total_similaridade.setdefault(filme, 0)
-                        total_similaridade[filme] += similaridade
-    rankings = [(nota / total_similaridade[filme], filme) for filme, nota in notas.items() if total_similaridade[filme] > 0]
-    rankings.sort(reverse=True)
-    return [filme for _, filme in rankings if _ >= nota]
+    for genero in value:
+        if genero in value["genero_musical"]:
+            vector.append(1)
+        else:
+            vector.append(0)
+   
+    vector.append(value["idade_minima"])
+    vector.append(value["preco"])
+   
+    data_parts = value["data"].split("-")
+    vector.extend(data_parts)
+   
+    return vector
 
 
-    
+# Função para calcular a similaridade entre dois vetores de características
+def euclidean_distance(vec1, vec2):
+    squared_diffs = [(float(vec1[i])-float(vec2[i]))**2 for i in range(len(vec1))]
+    return math.sqrt(sum(squared_diffs))
 
-# # Rota para a página inicial
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
 
-# # Rota para a página de recomendação
-# @app.route('/recomendacao', methods=['GET', 'POST'])
-# def recomendacao():
-#     if request.method == 'POST':
-#         # Obtendo os gêneros selecionados e o valor atribuído ao item escolhido
-#         selected_genres = request.form.getlist('genres')
-#         item_value = int(request.form['value'])
+def recommend_eventos(usuario_referencia, data, n=3):
+    # Obtém o vetor de características do usuário
+    usuario_vector = get_evento_vector(usuario_referencia)
+
+    # Calcula a distância euclidiana entre o vetor do usuário e o vetor de cada festa
+    distancias = []
+    for festa in data:
+        festa_vector = get_evento_vector(festa)
+        distancia = euclidean_distance(usuario_vector, festa_vector)
+        distancias.append((festa, distancia))
+
+    # Ordena as festas por distância e retorna as n mais próximas
+    distancias.sort(key=lambda x: x[1])
+    return [x[0] for x in distancias[:n]]
+
+
+def register(name, description, date, place, genre, age, price):
+    new_id = -1
+    for element in data:
+        new_id = element['id']
+
+    new_data = {'id': new_id + 1, 'nome': name, 'descricao': description, 'data': date, 'local': place, 'genero_musical':[genre], 'idade_minima': age, 'preco': price}
+    data.append(new_data)
+
+    with open(caminho_arquivo, 'w') as f:
+        json.dump(data, f)
+
+
+@app.route('/', methods=['GET', 'POST'])
+def show_recommendations():
+    if (request.form):
+        date = request.form['date']
+        genre = request.form['genre']
+        age = request.form['age']
+        price = request.form['price']
         
-#         # Obtendo a lista de recomendações
-#         recommended_items = get_recommendations(selected_genres, item_value)
+        new_data = {'data': date, 'idade_minima': int(age), 'preco': float(price), 'genero_musical': [genre]}
+        recommendations = recommend_eventos(new_data, data)
+        
+        print(recommendations)
 
-#         # Retornando a lista de itens recomendados renderizados no template
-#         return render_template('recomendacao.html', items=recommended_items[:10])
-#     else:
-#         # Retornando a página de seleção de gêneros e valor do item
-#         return render_template('selecao.html')
+        return render_template('index.html', items=recommendations)
+
+    return render_template('index.html')
 
 
-@app.route('/teste')
-def teste():
-    este = get_recommendations('Marcos', 2, avaliacoes)
-    print(este)
-    return str(este)
+@app.route('/cadastrar-evento', methods=['GET', 'POST'])
+def show_register():
+    if (request.form):
+        name = request.form['name']
+        description = request.form['description']
+        date = request.form['date']
+        place = request.form['place']
+        genre = request.form['genre']
+        age = request.form['age']
+        price = request.form['price']
+        register(name, description, date, place, genre, int(age), float(price))
+
+    return render_template('register.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
