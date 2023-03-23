@@ -14,39 +14,40 @@ with open(caminho_arquivo, 'r') as f:
 
 # Função para obter o vetor de características de uma festa
 def get_festa_vector(data):
+    # generos = ["Pop", "Eletrônica", "Forró", "Sertanejo", "Techno", "House", "Rock", "MPB", "Funk"]
     vector = []
-    vector.append(data["nome"])
+    for genero in data:
+        if genero in data["genero_musical"]:
+            vector.append(1)
+        else:
+            vector.append(0)
+    vector.append(data["idade_minima"])
+    vector.append(data["preco"])
     data_parts = data["data"].split("-")
     vector.extend(data_parts)
-    local_parts = data["local"].split(" ")
-    for part in local_parts:
-        vector += [ord(c) for c in part]
-    generos = data["genero_musical"]
-    for genero in generos:
-        vector += [ord(c) for c in genero]
-    vector.append(data["preco"])
     return vector
 
 # Função para calcular a similaridade entre dois vetores de características
-def cosine_similarity(vec1, vec2):
-    dot_product = sum([float(vec1[i])*float(vec2[i]) for i in range(len(vec1))])
-    magnitude1 = math.sqrt(sum([float(num)**2 for num in vec1]))
-    magnitude2 = math.sqrt(sum([float(num)**2 for num in vec2]))
-    return dot_product/(magnitude1*magnitude2)
+def euclidean_distance(vec1, vec2):
+    squared_diffs = [(float(vec1[i])-float(vec2[i]))**2 for i in range(len(vec1))]
+    return math.sqrt(sum(squared_diffs))
 
-# Função para recomendar festas com base em um usuário de referência
 def recommend_festas(usuario_referencia, data, n=3):
     # Obtém o vetor de características do usuário
     usuario_vector = get_festa_vector(usuario_referencia)
-    # Calcula a similaridade entre o vetor do usuário e o vetor de cada festa
-    similaridades = []
+
+    # Calcula a distância euclidiana entre o vetor do usuário e o vetor de cada festa
+    distancias = []
     for festa in data:
         festa_vector = get_festa_vector(festa)
-        similaridade = cosine_similarity(usuario_vector, festa_vector)
-        similaridades.append((festa, similaridade))
-    # Ordena as festas por similaridade e retorna as n melhores
-    similaridades.sort(key=lambda x: x[1], reverse=True)
-    return [x[0] for x in similaridades[:n]]
+        distancia = euclidean_distance(usuario_vector, festa_vector)
+        distancias.append((festa, distancia))
+
+    # Ordena as festas por distância e retorna as n mais próximas
+    distancias.sort(key=lambda x: x[1])
+    return [x[0] for x in distancias[:n]]
+
+
 
 @app.route('/lista-devedores')
 def lista():

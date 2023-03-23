@@ -63,5 +63,95 @@
         ],
         "idade_minima": 18,
         "preco": 60.0
+    },
+    {
+        "id": 6,
+        "nome": "Festa de Halloween",
+        "descricao": "Festa de Halloween em um castelo assombrado, com música gótica e drinks temáticos",
+        "data": "2023-10-31",
+        "local": "Castelo Assombrado",
+        "genero_musical": [
+            "Gótico",
+            "Rock"
+        ],
+        "idade_minima": 20,
+        "preco": 100.0
+    },
+    {
+        "id": 7,
+        "nome": "Festa de 15 anos",
+        "descricao": "Festa de aniversário de 15 anos em um salão de festas, com decoração temática e DJ",
+        "data": "2023-07-15",
+        "local": "Salão de Festas",
+        "genero_musical": [
+            "Pop",
+            "Funk"
+        ],
+        "idade_minima": 15,
+        "preco": 50.0
+    },
+    {
+        "id": 8,
+        "nome": "Festa de Carnaval",
+        "descricao": "Festa de carnaval em um clube de samba, com música ao vivo e buffet de comidas típicas",
+        "data": "2023-05-20",
+        "local": "Clube de Samba",
+        "genero_musical": [
+            "Samba",
+            "Marchinhas"
+        ],
+        "idade_minima": 18,
+        "preco": 80.0
+    },
+    {
+        "id": 9,
+        "nome": "Festa da Universidade",
+        "descricao": "Festa de universidade com várias atrações musicais, food trucks e bar temático",
+        "data": "2023-07-15",
+        "local": "Universidade",
+        "genero_musical": [
+            "Pop",
+            "Rock",
+            "Funk",
+            "Eletrônica"
+        ],
+        "idade_minima": 18,
+        "preco": 20.0
+    },
+    {
+        "id": 10,
+        "nome": "Festa das Primas",
+        "descricao": "Ambiente familiar e escurinho com universitárias top",
+        "data": "2023-07-15",
+        "local": "Bem ali",
+        "genero_musical": [
+            "Funk"
+        ],
+        "idade_minima": 20,
+        "preco": 70.0
+    },
+    {
+        "id": 11,
+        "nome": "Festa proibida",
+        "descricao": "vá armado",
+        "data": "2023-02-30",
+        "local": "Na biqueira",
+        "genero_musical": [
+            "Funk"
+        ],
+        "idade_minima": 15,
+        "preco": 0.0
+    },
+    {
+        "id": 11,
+        "nome": "Festa de programador",
+        "descricao": "Só gordo, cabeludo, barbudo e esquisito",
+        "data": "2023-03-22",
+        "local": "No fliperama se é que ainda existe",
+        "genero_musical": [
+            "Arcade Game Music"
+        ],
+        "idade_minima": 12,
+        "preco": 10.0
     }
 ]
